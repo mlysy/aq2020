@@ -1,0 +1,25 @@
+Package: aq2020
+Title: Software to Replicate Analysis of AQ2020 Paper
+Version: 0.0.0.9000
+Authors@R: c(
+    person(given = "Martin",
+           family = "Lysy",
+           role = c("aut", "cre"),
+           email = "mlysy@uwaterloo.ca"),
+    person(given = "Hind",
+           family = "Al-Abadleh",
+	   role = "aut"))
+Description: Provides the statistical tools created for the analysis in this paper, including step-by-step instructions to replicate the p-value calculations and figures.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports: 
+    dplyr,
+    ggplot2
+Suggests:
+    readr,
+    lubridate    
+Depends: 
+    R (>= 2.10)
