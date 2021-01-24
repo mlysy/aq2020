@@ -16,10 +16,10 @@ fisher_pv(value, group, Tfun, nsim = 1000)
 \item{nsim}{Number of randomizations to perform.}
 }
 \value{
-A two column matrix with columns:
+A two column matrix with \code{ntest} rows and columns:
 \describe{
-\item{\code{pval}}{A vector of \code{ntest} p-values of the form \code{Pr(Tsim[i] > Tobs[i])}, where \code{Tobs[i] = Tfun(value, group)[i]} and where \code{Tsim} is computed by randomly reallocating \code{value} to the given vector \code{group}.}
 \item{\code{Tobs}}{A vector of length \code{ntest}, where \code{Tobs[i]} is the observed value of test statistic \code{i}.}
+\item{\code{pval}}{A vector of \code{ntest} p-values of the form \code{Pr(Tsim[i] > Tobs[i])}, where \code{Tobs[i] = Tfun(value, group)[i]} and where \code{Tsim} is computed by randomly reallocating \code{value} to the given vector \code{group}.}
 }
 }
 \description{
