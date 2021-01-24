@@ -30,17 +30,6 @@ set_tibble <- function(x, nm) {
          Name = nm)
 }
 
-## source("covid-functions.R")
-
-## statpoll <- read_csv("aqo-statpoll_info.csv") %>%
-##   filter(has_poll)
-
-## get_fname <- function(path, station, pollutant) {
-##   fname <- paste0(station, "_", pollutant, "_Jan_2017_Jun_2020.csv")
-##   file.path(path, fname)
-## }
-
-
 #` P-value calculation.
 #`
 #` @param station Station name.
@@ -65,18 +54,6 @@ pval_calc <- function(station, pollutant, months, no_wknd = TRUE, nsim) {
       filter(!Weekday %in% c("Sat", "Sun")) %>%
       select(-Weekday)
   }
-  ## poll_data <- read_csv(get_fname(path, station, pollutant))
-  ## # prepare for p-values
-  ## poll_data <- poll_data %>%
-  ##   mutate(Year = year(Date),
-  ##        Month = month(Date, label = TRUE, abbr = FALSE),
-  ##        Day = day(Date)) %>%
-  ## filter(Month %in% month(1:6, label = TRUE, abbr = FALSE)) %>%
-  ## pivot_longer(cols = H01:H24, names_to = "Hour",
-  ##              values_to = "Concentration") %>%
-  ## group_by(Year, Month, Day) %>%
-  ## summarize(Concentration = mean(Concentration, na.rm = TRUE),
-  ##           .groups = "drop")
   # pvalue calculations
   stat_names <- c("Tobs_mean_old", "Tobs_med_old",
                   "Tobs_mean_new", "Tobs_med_new",
@@ -84,9 +61,8 @@ pval_calc <- function(station, pollutant, months, no_wknd = TRUE, nsim) {
                   "pval_mean_new", "pval_med_new",
                   "n")
   tm <- system.time({
-    pv_data <- bind_rows(
-      # 2017-2019
-      poll_data %>%
+    # 2017-2019
+    pv_ref <- poll_data %>%
       filter(Year != 2020) %>%
       group_by(Month) %>%
       summarize(set_tibble(
@@ -96,9 +72,9 @@ pval_calc <- function(station, pollutant, months, no_wknd = TRUE, nsim) {
                         Tfun = Tmulti), n()),
         nm = stat_names),
         .groups = "drop") %>%
-      mutate(Period = "2017-2019"),
-      # 2020
-      poll_data %>%
+      mutate(Period = "2017-2019")
+    # 2020
+    pv_2020 <- poll_data %>%
       mutate(Year = ifelse(Year == 2020, "2020", "2017-2019")) %>%
       group_by(Month) %>%
       summarize(set_tibble(
@@ -109,7 +85,7 @@ pval_calc <- function(station, pollutant, months, no_wknd = TRUE, nsim) {
         nm = stat_names),
         .groups = "drop") %>%
       mutate(Period = "2020")
-    )
+    pv_data <- bind_rows(pv_ref, pv_2020)
   })
   message("Time: ", round(tm[3], 1), " seconds")
   # append station and pollutant information
@@ -122,6 +98,7 @@ pval_calc <- function(station, pollutant, months, no_wknd = TRUE, nsim) {
 ## # test
 ## pv <- pval_calc(station = "Kitchener", pollutant = "NO2",
 ##                 months = 1:6, no_wknd = TRUE, nsim = 1e3)
+pv %>% pivot_wider(names_from = "Name", values_from = "Value")
 
 require(parallel)
 ncores <- detectCores(logical = FALSE) # number of cores to use
@@ -132,6 +109,9 @@ nsim <- 1e3 # number of random permutations
 months <- 1:12 # months for which to calculate p-values
 no_wknd <- TRUE # exclude weekends
 data_path <- file.path("data", "pollutant", "pvalue") # where to save data
+# which station/pollutant combinations
+# from pollutant_info to run
+job_ind <- which(pollutant_info$has_poll)
 
 # cluster setup
 # load packages
@@ -159,36 +139,6 @@ system.time({
       saveRDS(pv_data,
               file = get_filename(path = data_path,
                                   station, pollutant))
-    }
-    is.null(pv_data)
-  })
-})
-
-# kill cluster
-stopCluster(cl)
-
-
-nsim <- 1e4
-no_wknd <- TRUE
-data_path <- file.path("data", "2017-2020")
-if(no_wknd) data_path <- paste0(data_path, "_no_wknd")
-
-clusterExport(cl, varlist = ls()[ls() != "cl"])
-invisible(
-  clusterEvalQ(cl, expr = {
-    source("covid-functions.R")
-  })
-)
-
-system.time({
-  bad_ind <- parLapply(cl, 1:nrow(statpoll), fun = function(ii) {
-    pv_data <- tryCatch(pval_calc(ii, path = data_path),
-                        error = function(e) NULL)
-    if(!is.null(pv_data)) {
-      write_csv(pv_data,
-                path = get_fname(file.path(data_path, "pval"),
-                                 station = statpoll$station[ii],
-                                 pollutant = statpoll$pollutant[ii]))
     }
     is.null(pv_data)
   })
