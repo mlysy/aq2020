@@ -7,6 +7,7 @@
 Tdiff <- function(value, group) {
   grnm <- sort(unique(group))
   ngr <- length(grnm)
+  if(ngr != 2) stop("group must contain exactly two distinct values.")
   x <- matrix(NA, ngr, 2)
   for(ii in 1:ngr) {
     v <- value[group == grnm[ii]]
