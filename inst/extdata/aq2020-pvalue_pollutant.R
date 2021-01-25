@@ -1,6 +1,12 @@
 #--- batch p-value calculations ------------------------------------------------
 
-require(aq2020)
+## require(aq2020)
+source("../../R/fisher_pv.R")
+source("../../R/Tdiff.R")
+source("../../R/Tvar.R")
+source("../../R/Trange.R")
+load("../../data/pollutant_data.rda")
+load("../../data/pollutant_info.rda")
 require(tidyr)
 require(dplyr)
 require(lubridate)
@@ -30,15 +36,15 @@ set_tibble <- function(x, nm) {
          Name = nm)
 }
 
-#` P-value calculation.
-#`
-#` @param station Station name.
-#` @param pollutant Pollutant name.
-#` @param months Vector of integers between 1 and 12.
-#` @param no_wknd Logical, whether to exclude weekends.
-#` @param nsim Integer number of simulations.
-#`
-#` @return A tibble with columns:
+#' P-value calculation.
+#'
+#' @param station Station name.
+#' @param pollutant Pollutant name.
+#' @param months Vector of integers between 1 and 12.
+#' @param no_wknd Logical, whether to exclude weekends.
+#' @param nsim Integer number of simulations.
+#'
+#' @return A tibble with columns:
 pval_calc <- function(station, pollutant, months, no_wknd = TRUE, nsim) {
   message("Station: ", station, ", Pollutant: ", pollutant)
   # prepare data for p-values
@@ -97,8 +103,8 @@ pval_calc <- function(station, pollutant, months, no_wknd = TRUE, nsim) {
 
 ## # test
 ## pv <- pval_calc(station = "Kitchener", pollutant = "NO2",
-##                 months = 1:6, no_wknd = TRUE, nsim = 1e3)
-pv %>% pivot_wider(names_from = "Name", values_from = "Value")
+##                 months = c(2, 4, 7), no_wknd = TRUE, nsim = 1e3)
+## pv %>% pivot_wider(names_from = "Name", values_from = "Value")
 
 require(parallel)
 ncores <- detectCores(logical = FALSE) # number of cores to use
@@ -117,7 +123,6 @@ job_ind <- which(pollutant_info$has_poll)
 # load packages
 invisible(
   clusterEvalQ(cl, {
-    require(aq2020)
     require(tidyr)
     require(dplyr)
     require(lubridate)
@@ -127,7 +132,7 @@ invisible(
 clusterExport(cl, varlist = ls()[ls() != "cl"])
 
 system.time({
-  bad_ind <- parLapply(cl, 1:10, fun = function(ii) {
+  bad_ind <- parLapply(cl, job_ind[1:10], fun = function(ii) {
     station <- pollutant_info$station[ii]
     pollutant <- pollutant_info$pollutant[ii]
     pv_data <- tryCatch(
