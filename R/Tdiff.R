@@ -11,7 +11,7 @@ Tdiff <- function(value, group) {
   x <- matrix(NA, ngr, 2)
   for(ii in 1:ngr) {
     v <- value[group == grnm[ii]]
-    x[ii,] <- c(mean(v, na.rm = TRUE), median(v, na.rm = TRUE))
+    x[ii,] <- c(mean(v), median(v))
   }
   abs(x[2,] - x[1,])
 }
