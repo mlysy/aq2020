@@ -8,7 +8,20 @@ Authors@R: c(
            email = "mlysy@uwaterloo.ca"),
     person(given = "Hind",
            family = "Al-Abadleh",
-	   role = "aut"))
+	   role = "ctb"),
+    person(given = "Lucas",
+           family = "Neil",
+	   role = "ctb"),
+    person(given = "Priyesh",
+           family = "Patel",
+	   role = "ctb"),
+    person(given = "Wisam",
+           family = "Mohammed",
+	   role = "ctb"),
+    person(given = "Yara",
+           family = "Khalaf",
+	   role = "ctb")
+	   )
 Description: Provides the statistical tools created for the analysis in this paper, including step-by-step instructions to replicate the p-value calculations and figures.
 License: GPL-3
 Encoding: UTF-8
