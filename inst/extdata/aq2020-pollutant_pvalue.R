@@ -1,12 +1,18 @@
 #--- batch p-value calculations ------------------------------------------------
 
-## require(aq2020)
-source("../../R/fisher_pv.R")
-source("../../R/Tdiff.R")
-source("../../R/Tvar.R")
-source("../../R/Trange.R")
-load("../../data/pollutant_data.rda")
-load("../../data/pollutant_info.rda")
+use_server <- FALSE
+if(!use_server) {
+  # can't install package on mfcf server because of rvest dependency
+  require(aq2020)
+} else {
+  .libPaths("/u/mlysy/R/x86_64-pc-linux-gnu-library/3.6")
+  source("../../R/fisher_pv.R")
+  source("../../R/Tdiff.R")
+  source("../../R/Tvar.R")
+  source("../../R/Trange.R")
+  load("../../data/pollutant_data.rda")
+  load("../../data/pollutant_info.rda")
+}
 require(tidyr)
 require(dplyr)
 require(lubridate)
@@ -22,11 +28,13 @@ get_filename <- function(path, ..., ext = "rds") {
 
 # Test statistics for two-group comparison: 2017-2019 vs 2020
 Tbin <- function(value, group) {
+  if(n_distinct(group) < 2) return(rep(NA, 4))
   c(Tdiff(value, group), Trange(value, group))
 }
 
 # Test statistics for multi-group comparisons: 2017 vs 2018 vs 2019
 Tmulti <- function(value, group) {
+  if(n_distinct(group) < 2) return(rep(NA, 4))
   c(Tvar(value, group), Trange(value, group))
 }
 
@@ -45,6 +53,14 @@ set_tibble <- function(x, nm) {
 #' @param nsim Integer number of simulations.
 #'
 #' @return A tibble with columns:
+#' \describe{
+#'   \item{`Month`}{Month of the year.}
+#'   \item{`Value`}{Value of the computed statistic.}
+#'   \item{`Name`}{Name of the computed statistic.  These are: `{Tobs/pval}_{mean/med}_{old/new}`, `stat_{mean/med}`, and `n`.}
+#'   \item{`Period`}{Either "2017-2019" or "2020".}
+#'   \item{`Station`}{Station name.}
+#'   \item{`Pollutant`}{Pollutnat name.}
+#' }
 pval_calc <- function(station, pollutant, months, no_wknd = TRUE, nsim) {
   message("Station: ", station, ", Pollutant: ", pollutant)
   # prepare data for p-values
@@ -53,7 +69,8 @@ pval_calc <- function(station, pollutant, months, no_wknd = TRUE, nsim) {
     mutate(Year = year(Date),
            Month = month(Date, label = TRUE, abbr = FALSE),
            Day = day(Date)) %>%
-    filter(Month %in% month(1:6, label = TRUE, abbr = FALSE))
+    filter(Month %in% month(months, label = TRUE, abbr = FALSE)) %>%
+    filter(!is.na(Concentration))
   if(no_wknd) {
     poll_data <- poll_data %>%
       mutate(Weekday = wday(Date, label = TRUE)) %>%
@@ -65,7 +82,7 @@ pval_calc <- function(station, pollutant, months, no_wknd = TRUE, nsim) {
                   "Tobs_mean_new", "Tobs_med_new",
                   "pval_mean_old", "pval_med_old",
                   "pval_mean_new", "pval_med_new",
-                  "n")
+                  "stat_mean", "stat_med", "n")
   tm <- system.time({
     # 2017-2019
     pv_ref <- poll_data %>%
@@ -75,7 +92,10 @@ pval_calc <- function(station, pollutant, months, no_wknd = TRUE, nsim) {
         x = c(fisher_pv(group = Year,
                         value = Concentration,
                         nsim = nsim,
-                        Tfun = Tmulti), n()),
+                        Tfun = Tmulti),
+              mean(Concentration, na.rm = TRUE),
+              median(Concentration, na.rm = TRUE),
+              sum(!is.na(Concentration))),
         nm = stat_names),
         .groups = "drop") %>%
       mutate(Period = "2017-2019")
@@ -87,7 +107,10 @@ pval_calc <- function(station, pollutant, months, no_wknd = TRUE, nsim) {
         x = c(fisher_pv(group = Year,
                         value = Concentration,
                         nsim = nsim,
-                        Tfun = Tbin), sum(Year == "2020")),
+                        Tfun = Tbin),
+              mean(Concentration[Year == "2020"], na.rm = TRUE),
+              median(Concentration[Year == "2020"], na.rm = TRUE),
+              sum(!is.na(Concentration[Year == "2020"]))),
         nm = stat_names),
         .groups = "drop") %>%
       mutate(Period = "2020")
@@ -101,17 +124,18 @@ pval_calc <- function(station, pollutant, months, no_wknd = TRUE, nsim) {
   pv_data
 }
 
-## # test
-## pv <- pval_calc(station = "Kitchener", pollutant = "NO2",
-##                 months = c(2, 4, 7), no_wknd = TRUE, nsim = 1e3)
-## pv %>% pivot_wider(names_from = "Name", values_from = "Value")
+# test
+pv <- pval_calc(station = "Milton", pollutant = "O3",
+                months = 12, no_wknd = TRUE, nsim = 100)
+pv
+pv %>% pivot_wider(names_from = "Name", values_from = "Value")
 
 require(parallel)
 ncores <- detectCores(logical = FALSE) # number of cores to use
 RNGkind("L'Ecuyer-CMRG") # parallel processing seed
 cl <- makeCluster(spec = ncores)
 
-nsim <- 1e3 # number of random permutations
+nsim <- 1e4 # number of random permutations
 months <- 1:12 # months for which to calculate p-values
 no_wknd <- TRUE # exclude weekends
 data_path <- file.path("data", "pollutant", "pvalue") # where to save data
@@ -121,6 +145,19 @@ job_ind <- which(pollutant_info$has_poll)
 
 # cluster setup
 # load packages
+if(!use_server) {
+  invisible(
+    clusterEvalQ(cl, {
+      require(aq2020)
+    })
+  )
+} else {
+  invisible(
+    clusterEvalQ(cl, {
+      .libPaths("/u/mlysy/R/x86_64-pc-linux-gnu-library/3.6")
+    })
+  )
+}
 invisible(
   clusterEvalQ(cl, {
     require(tidyr)
@@ -132,9 +169,11 @@ invisible(
 clusterExport(cl, varlist = ls()[ls() != "cl"])
 
 system.time({
-  bad_ind <- parLapply(cl, job_ind[1:10], fun = function(ii) {
+  bad_ind <- parLapply(cl, job_ind, fun = function(ii) {
     station <- pollutant_info$station[ii]
     pollutant <- pollutant_info$pollutant[ii]
+    ## pv_data <- pval_calc(station = station, pollutant = pollutant,
+    ##                      months = months, no_wknd = no_wknd, nsim = nsim)
     pv_data <- tryCatch(
       pval_calc(station = station, pollutant = pollutant,
                 months = months, no_wknd = no_wknd, nsim = nsim),
@@ -152,40 +191,45 @@ system.time({
 # kill cluster
 stopCluster(cl)
 
-#--- combine datasets ----------------------------------------------------------
+#--- check if there were any issues --------------------------------------------
 
-source("covid-functions.R")
-statpoll <- read_csv("aqo-statpoll_info.csv") %>%
-  filter(has_poll)
-get_fname <- function(path, ...) {
-  fname <- paste0(list(...), collapse = "_")
-  file.path(path, paste0(fname, ".csv"))
-}
-
-data_path <- file.path("data", "concentration", "2017-2020")
-data_period <- "jan_2017_jun_2020"
-no_wknd <- TRUE
-wknd_suffix <- ifelse(no_wknd, "no_wknd", "all_days")
-data_path <- paste0(data_path, "_", wknd_suffix)
-
-pval_data <- lapply(1:nrow(statpoll), function(ii) {
-  read_csv(get_fname(file.path(data_path, "pval"),
-                     statpoll$station[ii],
-                     statpoll$pollutant[ii],
-                     data_period))
+bad_ind <- lapply(job_ind, function(ii) {
+  station <- pollutant_info$station[ii]
+  pollutant <- pollutant_info$pollutant[ii]
+  pv_data <- tryCatch(
+    readRDS(file = get_filename(path = data_path,
+                                station, pollutant)),
+    error = function(e) NULL
+  )
+  is.null(pv_data)
 })
 
-# save data
-pval_data %>% bind_rows() %>%
-  pivot_wider(names_from = "Stat",
-              names_prefix = "Pval_", values_from = "Pval") %>%
-  select(Station, Pollutant, Period, Month, Pval_mean, Pval_med) %>%
-  write_csv(path = get_fname("data", "conc-pval", data_period, wknd_suffix))
+any(unlist(bad_ind))
 
-# save data
-## bind_rows(pval_data) %>%
-##   select(Station, Pollutant, Period, Month, Pvalue = pval) %>%
-##   write_csv(path = "pvalue_data_jan_2017_jun_2020.csv")
+
+#--- combine datasets ----------------------------------------------------------
+
+#' The dataset will contain the following columns:
+#'
+#' - Station: station name.
+#' - Pollutant: pollutant name.
+#' - Period: 2017-2019 or 2020.
+#' - Month: name of the month.
+#' - `Ndays`: number of days in the given Month and Period.
+#' - Median concentration over all days in the given Month and Period.
+#' - `Pval`: p-value of the randomization test.
+
+pollutant_pval <- lapply(job_ind, function(ii) {
+  station <- pollutant_info$station[ii]
+  pollutant <- pollutant_info$pollutant[ii]
+  pv_data <- readRDS(file = get_filename(path = data_path,
+                                         station, pollutant))
+  pv_data %>%
+    pivot_wider(names_from = "Name", values_from = "Value") %>%
+    select(Station, Pollutant, Period, Month,
+           Ndays = n, Median = stat_med, Pval = pval_med_new)
+}) %>% bind_rows()
+
 
 #--- check boxplot -------------------------------------------------------------
 

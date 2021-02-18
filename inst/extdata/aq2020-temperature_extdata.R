@@ -69,6 +69,7 @@ temperature_info <- temperature_info %>% bind_rows() %>%
 
 #' Finally we can convert the relevant `csv` files in each of the folders into `rds` files all in the same `raw` folder contained in the package.  Let's name these: `{station}_{year}.rds`.
 
+#+ temperature_rds
 save_path <- path("data", "temperature", "raw") # where to put the files
 
 for(ii in 1:nrow(temperature_info)) {
@@ -98,6 +99,7 @@ for(ii in 1:nrow(temperature_info)) {
 #'
 #' This file is included in the **aq2020** package as `temperature_data`.
 
+#+ temperature_data
 data_path <- path("data", "temperature", "raw")
 
 temperature_data <- lapply(dir_ls(data_path), function(fname) {
