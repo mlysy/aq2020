@@ -11,9 +11,13 @@ Provides the statistical tools created for the analysis in this paper, including
 \author{
 \strong{Maintainer}: Martin Lysy \email{mlysy@uwaterloo.ca}
 
-Authors:
+Other contributors:
 \itemize{
-  \item Hind Al-Abadleh
+  \item Hind Al-Abadleh [contributor]
+  \item Lucas Neil [contributor]
+  \item Priyesh Patel [contributor]
+  \item Wisam Mohammed [contributor]
+  \item Yara Khalaf [contributor]
 }
 
 }

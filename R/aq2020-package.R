@@ -1,6 +1,6 @@
 #' @keywords internal
 #' @import dplyr
-#' @import ggplot2
+#' @importFrom stats median setNames var
 "_PACKAGE"
 
 # The following block is used by usethis to automatically manage

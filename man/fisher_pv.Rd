@@ -2,26 +2,32 @@
 % Please edit documentation in R/fisher_pv.R
 \name{fisher_pv}
 \alias{fisher_pv}
-\title{Fisher randomization test.}
+\title{Compute the p-value of a Fisher randomization test.}
 \usage{
 fisher_pv(value, group, Tfun, nsim = 1000)
 }
 \arguments{
-\item{value}{Value variable of length \code{nobs}.}
+\item{value}{Vector of length \code{nobs} corresponding to the values from which the test statistics is computed.  That is, \code{value[i]} is the value corresponding to observation \code{i}.}
 
-\item{group}{Grouping variable of length \code{nobs}.}
+\item{group}{Vector of length \code{nobs} indicating to which group each observation belongs.  Group membership is determined from the elements of \code{unique(group)}.}
 
-\item{Tfun}{Function taking vectorized arguments \code{value} and \code{group}, returning \code{ntest} test statistics.}
+\item{Tfun}{Function taking vector arguments \code{value} and \code{group}, returning \code{ntest} test statistics.}
 
 \item{nsim}{Number of randomizations to perform.}
 }
 \value{
 A two column matrix with \code{ntest} rows and columns:
 \describe{
-\item{\code{Tobs}}{A vector of length \code{ntest}, where \code{Tobs[i]} is the observed value of test statistic \code{i}.}
-\item{\code{pval}}{A vector of \code{ntest} p-values of the form \code{Pr(Tsim[i] > Tobs[i])}, where \code{Tobs[i] = Tfun(value, group)[i]} and where \code{Tsim} is computed by randomly reallocating \code{value} to the given vector \code{group}.}
+\item{\code{Tobs}}{A vector of length \code{ntest}, where \code{Tobs[t]} is the observed value of test statistic \code{t}.}
+\item{\code{pval}}{A vector of \code{ntest} p-values of the form \code{Pr(Tsim[t] > Tobs[t])}, where \code{Tobs[t] = Tfun(value, group)[t]} and \code{Tsim[t]} is computed by randomly reallocating \code{value} to the given vector \code{group}.}
 }
 }
 \description{
-Fisher randomization test.
+Compute the p-value of a Fisher randomization test.
+}
+\details{
+Suppose there is only one test statistic \code{ntest = 1}.  Then the Fisher randomization test calculates\preformatted{Pr(Tsim > Tobs),
+}
+
+where \code{Tobs = Tfun(value, group)} is the observed value of the test statistic, and \code{Tsim = Tfun(value[irand], group)}, where \code{irand} is a random permutation of the \code{nobs} observations.  When \code{ntest > 1}, \code{\link[=fisher_pv]{fisher_pv()}} performs the calculation above for each test statistic.
 }

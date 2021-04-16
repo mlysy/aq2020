@@ -12,6 +12,18 @@ get_filename <- function(path, ..., ext = "rds") {
   file.path(path, paste0(fname, ".", ext))
 }
 
+#--- one-off queries -----------------------------------------------------------
+
+# pollutant data for kitchener
+source_path <- "data/pollutant/raw"
+dest_path <- "/Users/mlysy/Data/R/aq2020/csv"
+fnames <- paste0("Kitchener_",
+                 c("NO2", "O3", "PM25"),
+                 "_2020_1_12")
+for(fn in fnames) {
+  data <- read_rds(file = get_filename(path = source_path, fn, ext = "rds"))
+  write_csv(data, file = get_filename(path = dest_path, fn, ext = "csv"))
+}
 
 #--- pollutant p-values --------------------------------------------------------
 

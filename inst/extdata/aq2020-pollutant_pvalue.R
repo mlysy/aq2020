@@ -59,7 +59,7 @@ set_tibble <- function(x, nm) {
 #'   \item{`Name`}{Name of the computed statistic.  These are: `{Tobs/pval}_{mean/med}_{old/new}`, `stat_{mean/med}`, and `n`.}
 #'   \item{`Period`}{Either "2017-2019" or "2020".}
 #'   \item{`Station`}{Station name.}
-#'   \item{`Pollutant`}{Pollutnat name.}
+#'   \item{`Pollutant`}{Pollutant name.}
 #' }
 pval_calc <- function(station, pollutant, months, no_wknd = TRUE, nsim) {
   message("Station: ", station, ", Pollutant: ", pollutant)

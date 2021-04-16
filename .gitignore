@@ -14,3 +14,10 @@ vignettes/.build.timestamp
 
 # osx
 *.DS_Store
+
+# pkgdown
+docs
+
+# rmarkdown
+doc
+Meta

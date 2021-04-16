@@ -28,12 +28,15 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
-Imports: 
+Imports:
     dplyr,
+    tidyr,
     rvest,
-    ggplot2
+    lubridate
 Suggests:
-    readr,
-    lubridate    
+    ggplot2,
+    knitr,
+    bookdown
 Depends: 
-    R (>= 2.10)
+    R (>= 3.5.0)
+VignetteBuilder: knitr

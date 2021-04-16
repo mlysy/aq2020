@@ -26,7 +26,7 @@ get_aqoyr <- function(station_id, poll_id, year,
   link <- paste0(aqo_link,
                  c(station_id, year, poll_id, start_month, end_month, ""),
                  collapse = "")
-  read_html(link) %>%
-    html_node("table.resourceTable") %>%
-    html_table(fill = fill)
+  rvest::read_html(link) %>%
+    rvest::html_node("table.resourceTable") %>%
+    rvest::html_table(fill = fill)
 }

@@ -15,6 +15,10 @@ devtools::install_github("mlysy/aq2020")
 
 ## Usage
 
+Please see the package vignettes: `vignettes("aq2020")` and `vignettes("aq2020-pvalue")`.
+
+## Additional Scripts
+
 Please see the following scripts in `inst/extdata`:
 
 - [`aq2020-pollutant_extdata.R`](inst/extdata/aq2020-pollutant_extdata.R) and [`aq2020-pollutant_pvalue.R`](inst/extdata/aq2020-pollutant_pvalue.R): Preprocessing and p-value calculations for the pollutant data.
@@ -27,11 +31,11 @@ Please see the following scripts in `inst/extdata`:
 
 ## TODO
 
-- [ ] Turn scripts into vignettes.
+- [x] Turn scripts into vignettes.
 
 - [ ] Standardize capitalization of columns in datasets.
 
-- [ ] Replace `poll_*` by `pollutant_*`.
+- [x] Replace `poll_*` by `pollutant_*`.
 
 - [ ] Document datasets.
 

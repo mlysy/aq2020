@@ -1,13 +1,18 @@
-#' Fisher randomization test.
+#' Compute the p-value of a Fisher randomization test.
 #'
-#' @param value Value variable of length `nobs`.
-#' @param group Grouping variable of length `nobs`.
-#' @param Tfun Function taking vectorized arguments `value` and `group`, returning `ntest` test statistics.
+#' @param value Vector of length `nobs` corresponding to the values from which the test statistics is computed.  That is, `value[i]` is the value corresponding to observation `i`.
+#' @param group Vector of length `nobs` indicating to which group each observation belongs.  Group membership is determined from the elements of `unique(group)`.
+#' @param Tfun Function taking vector arguments `value` and `group`, returning `ntest` test statistics.
 #' @param nsim Number of randomizations to perform.
+#' @details Suppose there is only one test statistic `ntest = 1`.  Then the Fisher randomization test calculates
+#' ```
+#' Pr(Tsim > Tobs),
+#' ```
+#' where `Tobs = Tfun(value, group)` is the observed value of the test statistic, and `Tsim = Tfun(value[irand], group)`, where `irand` is a random permutation of the `nobs` observations.  When `ntest > 1`, [fisher_pv()] performs the calculation above for each test statistic.
 #' @return A two column matrix with `ntest` rows and columns:
 #' \describe{
-#'   \item{`Tobs`}{A vector of length `ntest`, where `Tobs[i]` is the observed value of test statistic `i`.}
-#'   \item{`pval`}{A vector of `ntest` p-values of the form `Pr(Tsim[i] > Tobs[i])`, where `Tobs[i] = Tfun(value, group)[i]` and where `Tsim` is computed by randomly reallocating `value` to the given vector `group`.}
+#'   \item{`Tobs`}{A vector of length `ntest`, where `Tobs[t]` is the observed value of test statistic `t`.}
+#'   \item{`pval`}{A vector of `ntest` p-values of the form `Pr(Tsim[t] > Tobs[t])`, where `Tobs[t] = Tfun(value, group)[t]` and `Tsim[t]` is computed by randomly reallocating `value` to the given vector `group`.}
 #' }
 #' @export
 fisher_pv <- function(value, group, Tfun, nsim = 1e3) {
