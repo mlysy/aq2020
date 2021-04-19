@@ -2,10 +2,9 @@
 title: "AQ2020: Parallelized P-value Calculations"
 author: "Martin Lysy, Hind A. Al-Abadleh, Lucas Neil, Priyesh Patel, Wisam Mohammed, Yara Khalaf"
 date: "`r Sys.Date()`"
-output:
-  bookdown::html_vignette2:
-    toc: yes
-    number_sections: no
+output: bookdown::html_vignette2
+pkgdown:
+  as_is: true
 bibliography: references.bib
 csl: taylor-and-francis-harvard-x.csl
 link-citations: true
@@ -14,6 +13,13 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
 
 # Motivation
 

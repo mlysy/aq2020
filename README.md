@@ -15,19 +15,19 @@ devtools::install_github("mlysy/aq2020")
 
 ## Usage
 
-Please see the package vignettes: `vignettes("aq2020")` and `vignettes("aq2020-pvalue")`.
+Please see the package vignettes: `vignette("aq2020")` and `vignette("aq2020-pvalue")`.
 
 ## Additional Scripts
 
 Please see the following scripts in `inst/extdata`:
 
-- [`aq2020-pollutant_extdata.R`](inst/extdata/aq2020-pollutant_extdata.R) and [`aq2020-pollutant_pvalue.R`](inst/extdata/aq2020-pollutant_pvalue.R): Preprocessing and p-value calculations for the pollutant data.
+- [`aq2020-pollutant_extdata.R`](https://github.com/mlysy/aq2020/tree/main/inst/extdata/aq2020-pollutant_extdata.R) and [`aq2020-pollutant_pvalue.R`](https://github.com/mlysy/aq2020/tree/main/inst/extdata/aq2020-pollutant_pvalue.R): Preprocessing and p-value calculations for the pollutant data.
 
-- [`aq2020-temperature_extdata.R`](inst/extdata/aq2020-temperature_extdata.R) and [`aq2020-temperature_pvalue.R`](inst/extdata/aq2020-temperature_pvalue.R): Preprocessing and p-value calculations for the temperature data.
+- [`aq2020-temperature_extdata.R`](https://github.com/mlysy/aq2020/tree/main/inst/extdata/aq2020-temperature_extdata.R) and [`aq2020-temperature_pvalue.R`](https://github.com/mlysy/aq2020/tree/main/inst/extdata/aq2020-temperature_pvalue.R): Preprocessing and p-value calculations for the temperature data.
 
-- [`aq2020-irradiance_extdata.R`](inst/extdata/aq2020-irradiance_extdata.R) and [`aq2020-irradiance_pvalue.R`](inst/extdata/aq2020-irradiance_pvalue.R): Preprocessing and p-value calculations for the solar irradiance data.
+- [`aq2020-irradiance_extdata.R`](https://github.com/mlysy/aq2020/tree/main/inst/extdata/aq2020-irradiance_extdata.R) and [`aq2020-irradiance_pvalue.R`](https://github.com/mlysy/aq2020/tree/main/inst/extdata/aq2020-irradiance_pvalue.R): Preprocessing and p-value calculations for the solar irradiance data.
 
-- [`aq2020-pval_plots.R`](inst/extdata/aq2020-pval_plots.R): P-value boxplots in the paper.
+- [`aq2020-pval_plots.R`](https://github.com/mlysy/aq2020/tree/main/inst/extdata/aq2020-pval_plots.R): P-value boxplots in the paper.
 
 ## TODO
 
@@ -37,7 +37,9 @@ Please see the following scripts in `inst/extdata`:
 
 - [x] Replace `poll_*` by `pollutant_*`.
 
-- [ ] Document datasets.
+- [x] Document `pollutant` datasets.  
+
+- [ ] Document `temperature` and `irradiance` datasets. Should also clean up `temperature_info`.
 
 - [ ] Add 3-day webscrape function `get_aqo3d()`.  What's missing is to format the output in `H00:H23` format (always EST).
 

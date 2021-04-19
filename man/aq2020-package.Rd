@@ -8,16 +8,24 @@
 \description{
 Provides the statistical tools created for the analysis in this paper, including step-by-step instructions to replicate the p-value calculations and figures.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/mlysy/aq2020}
+  \item Report bugs at \url{https://github.com/mlysy/aq2020/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Martin Lysy \email{mlysy@uwaterloo.ca}
 
-Other contributors:
+Authors:
 \itemize{
-  \item Hind Al-Abadleh [contributor]
-  \item Lucas Neil [contributor]
-  \item Priyesh Patel [contributor]
-  \item Wisam Mohammed [contributor]
-  \item Yara Khalaf [contributor]
+  \item Hind Al-Abadleh
+  \item Lucas Neil
+  \item Priyesh Patel
+  \item Wisam Mohammed
+  \item Yara Khalaf
 }
 
 }
