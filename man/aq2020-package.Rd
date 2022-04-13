@@ -4,9 +4,9 @@
 \name{aq2020-package}
 \alias{aq2020}
 \alias{aq2020-package}
-\title{aq2020: Software to Replicate Analysis of AQ2020 Paper}
+\title{aq2020: Statistical Analysis of Air Quality Data}
 \description{
-Provides the statistical tools created for the analysis in this paper, including step-by-step instructions to replicate the p-value calculations and figures.
+Provides the statistical tools created for the analysis in Al-Abadleh et al (2021) <doi:10.1016/j.jhazmat.2021.125445>, including step-by-step instructions to replicate the p-value calculations and figures.
 }
 \seealso{
 Useful links:

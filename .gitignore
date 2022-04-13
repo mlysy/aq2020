@@ -21,3 +21,5 @@ docs
 # rmarkdown
 doc
 Meta
+/doc/
+/Meta/

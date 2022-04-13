@@ -4,7 +4,7 @@
 \alias{fisher_pv}
 \title{Compute the p-value of a Fisher randomization test.}
 \usage{
-fisher_pv(value, group, Tfun, nsim = 1000)
+fisher_pv(value, group, Tfun, nsim = 1000, strict = TRUE)
 }
 \arguments{
 \item{value}{Vector of length \code{nobs} corresponding to the values from which the test statistics is computed.  That is, \code{value[i]} is the value corresponding to observation \code{i}.}
@@ -14,6 +14,8 @@ fisher_pv(value, group, Tfun, nsim = 1000)
 \item{Tfun}{Function taking vector arguments \code{value} and \code{group}, returning \code{ntest} test statistics.}
 
 \item{nsim}{Number of randomizations to perform.}
+
+\item{strict}{Whether the p-value is "strictly greater" or just "greater than or equal" (see 'Details').}
 }
 \value{
 A two column matrix with \code{ntest} rows and columns:
@@ -30,4 +32,6 @@ Suppose there is only one test statistic \code{ntest = 1}.  Then the Fisher rand
 }
 
 where \code{Tobs = Tfun(value, group)} is the observed value of the test statistic, and \code{Tsim = Tfun(value[irand], group)}, where \code{irand} is a random permutation of the \code{nobs} observations.  When \code{ntest > 1}, \code{\link[=fisher_pv]{fisher_pv()}} performs the calculation above for each test statistic.
+
+When \code{strict = FALSE} the p-value is \code{Pr(Tsim >= Tobs)}.
 }
